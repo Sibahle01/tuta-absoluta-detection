@@ -1,0 +1,28 @@
+# Chemical Rotation Schedule for Insecticide Resistance Management
+# Based on Van den Berg et al. 2022
+
+chemical_rotation:
+  schedule:
+    - name: "spinosad"
+      class: "Spinosyns"
+      max_applications_per_season: 3
+      resistance_risk: "moderate"
+      description: "Naturally derived, low environmental impact"
+      
+    - name: "chlorantraniliprole"
+      class: "Diamides"
+      max_applications_per_season: 2
+      resistance_risk: "high"
+      description: "Effective but high resistance risk"
+      
+    - name: "Bacillus thuringiensis"
+      class: "Biological"
+      max_applications_per_season: 999
+      resistance_risk: "low"
+      description: "Biological control, safe for beneficial insects"
+  
+  rotation_required_after_applications: 2  # Switch after 2 sprays
+  
+  resistance_thresholds:
+    warning: 0.6   # 60% efficacy - warn farmer
+    critical: 0.4  # 40% efficacy - switch chemical immediately

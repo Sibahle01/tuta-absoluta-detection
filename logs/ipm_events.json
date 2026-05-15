@@ -1,0 +1,18 @@
+[
+  {
+    "pest_count": 0,
+    "detection_confidences": [],
+    "temperature": 25.0,
+    "humidity": 60.00002653589793,
+    "ppi": 0.55,
+    "action": "warning",
+    "alert_level": "warning",
+    "message": "WARNING: 0 pests detected (PPI=0.55). Monitor closely.",
+    "temperature_factor": 1.0,
+    "humidity_factor": 1.0,
+    "trend_factor": 0.5,
+    "recommended_chemical": null,
+    "total_detections_so_far": 0,
+    "timestamp": "2026-05-15T14:11:24.342413"
+  }
+]

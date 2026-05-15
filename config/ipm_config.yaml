@@ -1,0 +1,49 @@
+# Integrated Pest Management Configuration for Tuta absoluta
+# Based on literature: Rostami 2021, Van den Berg 2022, Cuthbertson 2013
+
+economic_thresholds:
+  pests_per_image: 4           # Rostami et al. 2021 - Economic Injury Level
+  warning_threshold: 2         # Pre-emptive monitoring level
+
+pest_pressure_index_weights:
+  pest_count_weight: 0.40      # α - Primary factor
+  temperature_weight: 0.30     # β - Development rate factor
+  humidity_weight: 0.20        # γ - Survival factor  
+  trend_weight: 0.10           # δ - Population momentum
+
+temperature_limits:
+  development_min: 10          # °C - Below this, development stops
+  development_opt_min: 20      # °C - Optimal range start
+  development_opt_max: 30      # °C - Optimal range end
+  development_max: 35          # °C - Above this, mortality increases
+
+humidity_limits:
+  optimal_min: 40              # % RH - Optimal lower bound
+  optimal_max: 70              # % RH - Optimal upper bound
+  lethal_min: 20               # % RH - Below this, desiccation
+  lethal_max: 85               # % RH - Above this, fungal risk
+
+chemical_rotation:
+  schedule:
+    - name: "spinosad"
+      class: "Spinosyns"
+      max_applications_per_season: 3
+      resistance_risk: "moderate"
+      
+    - name: "chlorantraniliprole"
+      class: "Diamides"
+      max_applications_per_season: 2
+      resistance_risk: "high"
+      
+    - name: "Bacillus thuringiensis"
+      class: "Biological"
+      max_applications_per_season: 999  # No resistance limit
+      resistance_risk: "low"
+  
+  rotation_required_after_applications: 2  # Switch after 2 sprays
+
+alert_config:
+  cooldown_minutes: 60         # Don't spam same alert
+  escalation_levels:
+    warning: "SMS"
+    critical: "SMS + call"

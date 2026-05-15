@@ -1,0 +1,2 @@
+timestamp,pest_count,temperature,humidity,ppi,action,message
+2026-05-15T14:11:24.377232,0,25.0,60.00002653589793,0.55,warning,WARNING: 0 pests detected (PPI=0.55). Monitor closely.
