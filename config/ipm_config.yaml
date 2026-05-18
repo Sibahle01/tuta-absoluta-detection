@@ -1,49 +1,104 @@
 # Integrated Pest Management Configuration for Tuta absoluta
-# Based on literature: Rostami 2021, Van den Berg 2022, Cuthbertson 2013
+# Based on literature: Rostami et al. (2021), Van den Berg et al. (2022), Cuthbertson et al. (2013)
+# RECALIBRATED: Conservative action threshold at 50% of EIL for early intervention
 
+# ============================================================
+# ECONOMIC THRESHOLDS (Rostami et al. 2021)
+# ============================================================
 economic_thresholds:
-  pests_per_image: 4           # Rostami et al. 2021 - Economic Injury Level
-  warning_threshold: 2         # Pre-emptive monitoring level
+  pests_per_image: 4           # Rostami et al. 2021 - Economic Injury Level (EIL)
+  action_threshold: 2          # Conservative AT - early intervention before economic damage
+  warning_threshold: 1         # Pre-emptive monitoring level
 
+# ============================================================
+# PPI WEIGHTING COEFFICIENTS (Must sum to 1.0)
+# RECALIBRATED: Pest count is THE primary driver
+# ============================================================
 pest_pressure_index_weights:
-  pest_count_weight: 0.40      # α - Primary factor
-  temperature_weight: 0.30     # β - Development rate factor
-  humidity_weight: 0.20        # γ - Survival factor  
-  trend_weight: 0.10           # δ - Population momentum
+  pest_count_weight: 0.50      # alpha - Primary factor
+  trend_weight: 0.25           # beta - Population momentum
+  temperature_weight: 0.15     # gamma - Development rate factor
+  humidity_weight: 0.10        # delta - Survival factor
 
+# ============================================================
+# DECISION ZONE THRESHOLDS (RECALIBRATED)
+# Conservative design: 2 pests triggers ORANGE/SPRAY
+# Rationale: Early intervention prevents population explosion
+# Source: Van den Berg et al. (2022) - resistance management
+# ============================================================
+thresholds:
+  green: 0.30   # 0-1 pests in low-risk conditions - monitor only
+  yellow: 0.55  # 1-2 pests approaching threshold - increase monitoring
+  orange: 0.62  # 2 pests - prepare and apply treatment
+  red: 0.75     # 3+ pests critical - emergency spray
+
+# ============================================================
+# TEMPERATURE LIMITS (Cuthbertson et al. 2013)
+# ============================================================
 temperature_limits:
-  development_min: 10          # °C - Below this, development stops
-  development_opt_min: 20      # °C - Optimal range start
-  development_opt_max: 30      # °C - Optimal range end
-  development_max: 35          # °C - Above this, mortality increases
+  development_min: 10          # Celsius - Below this, development stops
+  development_opt_min: 20      # Celsius - Optimal range start
+  development_opt_max: 30      # Celsius - Optimal range end
+  development_max: 35          # Celsius - Above this, mortality increases
 
+# ============================================================
+# HUMIDITY LIMITS
+# ============================================================
 humidity_limits:
-  optimal_min: 40              # % RH - Optimal lower bound
-  optimal_max: 70              # % RH - Optimal upper bound
-  lethal_min: 20               # % RH - Below this, desiccation
-  lethal_max: 85               # % RH - Above this, fungal risk
+  optimal_min: 40              # Percent RH - Optimal lower bound
+  optimal_max: 70              # Percent RH - Optimal upper bound
+  lethal_min: 20               # Percent RH - Below this, desiccation risk
+  lethal_max: 85               # Percent RH - Above this, fungal risk increases
 
+# ============================================================
+# CHEMICAL ROTATION (Van den Berg et al. 2022)
+# Rotation prevents resistance buildup documented in SA
+# ============================================================
 chemical_rotation:
   schedule:
+    - name: "Bacillus thuringiensis"
+      class: "Biological"
+      max_applications_per_season: 999
+      resistance_risk: "low"
+      priority: 1              # Always preferred - biological first
+
     - name: "spinosad"
       class: "Spinosyns"
       max_applications_per_season: 3
       resistance_risk: "moderate"
-      
+      priority: 2
+
     - name: "chlorantraniliprole"
       class: "Diamides"
       max_applications_per_season: 2
       resistance_risk: "high"
-      
-    - name: "Bacillus thuringiensis"
-      class: "Biological"
-      max_applications_per_season: 999  # No resistance limit
-      resistance_risk: "low"
-  
-  rotation_required_after_applications: 2  # Switch after 2 sprays
+      priority: 3              # Last resort chemical
 
+  rotation_required_after_applications: 2
+
+# ============================================================
+# ALERT CONFIGURATION
+# ============================================================
 alert_config:
-  cooldown_minutes: 60         # Don't spam same alert
+  cooldown_minutes: 60
   escalation_levels:
     warning: "SMS"
     critical: "SMS + call"
+
+# ============================================================
+# ZERO PEST GATE
+# Ensures 0 pests always returns GREEN regardless of conditions
+# Prevents false alerts from temperature/humidity factors alone
+# ============================================================
+zero_pest_gate:
+  enabled: true
+  max_ppi_when_zero_pests: 0.20
+
+# ============================================================
+# MONITORING INTERVALS (adaptive based on zone)
+# ============================================================
+monitoring_intervals:
+  green_hours: 48      # Check every 48 hours when pressure is low
+  yellow_hours: 24     # Daily monitoring when approaching threshold
+  orange_hours: 12     # Twice daily when at threshold
+  red_hours: 6         # Every 6 hours during critical infestation
